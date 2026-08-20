@@ -24,7 +24,6 @@ function Nova() {
   const [placa, setPlaca] = useState("");
   const [modelo, setModelo] = useState("");
   const [ano, setAno] = useState("");
-  const [km, setKm] = useState("");
   const [salvando, setSalvando] = useState(false);
 
   async function criar(e: React.FormEvent) {
@@ -62,7 +61,6 @@ function Nova() {
         .insert({
           cliente_id: cli.id,
           veiculo_id: vei.id,
-          km_entrada: km || null,
           created_by: uid,
         })
         .select("id")
@@ -99,7 +97,6 @@ function Nova() {
             />
             <Campo label="Modelo (opcional)" value={modelo} onChange={setModelo} />
             <Campo label="Ano" value={ano} onChange={setAno} type="number" />
-            <Campo label="Quilometragem de entrada" value={km} onChange={setKm} type="number" />
           </section>
 
           <button

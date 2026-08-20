@@ -17,6 +17,7 @@ import { Route as AuthenticatedBuscarRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
+import { Route as AuthenticatedAtendimentoIdRouteImport } from './routes/_authenticated/atendimento.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +58,12 @@ const AuthenticatedNovaRoute = AuthenticatedNovaRouteImport.update({
   path: '/nova',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAtendimentoIdRoute =
+  AuthenticatedAtendimentoIdRouteImport.update({
+    id: '/atendimento/$id',
+    path: '/atendimento/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/historico': typeof AuthenticatedHistoricoRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/atendimento/$id': typeof AuthenticatedAtendimentoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/historico': typeof AuthenticatedHistoricoRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
+  '/atendimento/$id': typeof AuthenticatedAtendimentoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
+  '/_authenticated/atendimento/$id': typeof AuthenticatedAtendimentoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/inicio'
     | '/nova'
+    | '/atendimento/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/historico'
     | '/inicio'
     | '/nova'
+    | '/atendimento/$id'
   id:
     | '__root__'
     | '/'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/historico'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
+    | '/_authenticated/atendimento/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNovaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/atendimento/$id': {
+      id: '/_authenticated/atendimento/$id'
+      path: '/atendimento/$id'
+      fullPath: '/atendimento/$id'
+      preLoaderRoute: typeof AuthenticatedAtendimentoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -191,6 +211,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
+  AuthenticatedAtendimentoIdRoute: typeof AuthenticatedAtendimentoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -199,6 +220,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
+  AuthenticatedAtendimentoIdRoute: AuthenticatedAtendimentoIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
