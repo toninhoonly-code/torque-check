@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAndamentoRouteImport } from './routes/_authenticated/andamento'
 import { Route as AuthenticatedBuscarRouteImport } from './routes/_authenticated/buscar'
+import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
 import { Route as AuthenticatedNovaRouteImport } from './routes/_authenticated/nova'
 
@@ -41,6 +42,11 @@ const AuthenticatedBuscarRoute = AuthenticatedBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHistoricoRoute = AuthenticatedHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   id: '/inicio',
   path: '/inicio',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/andamento': typeof AuthenticatedAndamentoRoute
   '/buscar': typeof AuthenticatedBuscarRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/andamento': typeof AuthenticatedAndamentoRoute
   '/buscar': typeof AuthenticatedBuscarRoute
+  '/historico': typeof AuthenticatedHistoricoRoute
   '/inicio': typeof AuthenticatedInicioRoute
   '/nova': typeof AuthenticatedNovaRoute
 }
@@ -75,14 +83,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/andamento': typeof AuthenticatedAndamentoRoute
   '/_authenticated/buscar': typeof AuthenticatedBuscarRoute
+  '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/nova': typeof AuthenticatedNovaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/andamento' | '/buscar' | '/inicio' | '/nova'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/andamento'
+    | '/buscar'
+    | '/historico'
+    | '/inicio'
+    | '/nova'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/andamento' | '/buscar' | '/inicio' | '/nova'
+  to:
+    | '/'
+    | '/auth'
+    | '/andamento'
+    | '/buscar'
+    | '/historico'
+    | '/inicio'
+    | '/nova'
   id:
     | '__root__'
     | '/'
@@ -90,6 +113,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/andamento'
     | '/_authenticated/buscar'
+    | '/_authenticated/historico'
     | '/_authenticated/inicio'
     | '/_authenticated/nova'
   fileRoutesById: FileRoutesById
@@ -137,6 +161,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuscarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/historico': {
+      id: '/_authenticated/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof AuthenticatedHistoricoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/inicio': {
       id: '/_authenticated/inicio'
       path: '/inicio'
@@ -157,6 +188,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAndamentoRoute: typeof AuthenticatedAndamentoRoute
   AuthenticatedBuscarRoute: typeof AuthenticatedBuscarRoute
+  AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNovaRoute: typeof AuthenticatedNovaRoute
 }
@@ -164,6 +196,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAndamentoRoute: AuthenticatedAndamentoRoute,
   AuthenticatedBuscarRoute: AuthenticatedBuscarRoute,
+  AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNovaRoute: AuthenticatedNovaRoute,
 }
