@@ -66,7 +66,6 @@ export function FotoItem({
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => {
           void handle(e.target.files?.[0]);
