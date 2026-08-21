@@ -35,9 +35,9 @@ const CLIENTE: Botao[] = [
 ];
 
 function Inicio() {
-  const { isEquipe, isAdmin, carregando } = usePapel();
+  const { isEquipe, isAdmin, carregando, inativo } = usePapel();
 
-  const botoes: Botao[] = carregando
+  const botoes: Botao[] = carregando || inativo
     ? []
     : isEquipe
       ? [...EQUIPE, ...(isAdmin ? [{ to: "/admin", label: "Administração", icon: Shield }] : [])]
@@ -47,6 +47,17 @@ function Inicio() {
     <>
       <AppHeader />
       <main className="mx-auto max-w-3xl space-y-4 px-4 py-6">
+        {inativo && !carregando && (
+          <div className="surface-card space-y-2 border border-primary p-5">
+            <h2 className="text-base font-extrabold uppercase text-primary">Conta desativada</h2>
+            <p className="text-sm text-muted-foreground">
+              O seu acesso foi desativado pelo administrador da oficina. Os atendimentos e o
+              histórico registrados por você continuam preservados no sistema. Fale com o
+              administrador para reativar o acesso.
+            </p>
+          </div>
+        )}
+
         {carregando && (
           <p className="py-10 text-center text-sm text-muted-foreground">Carregando...</p>
         )}

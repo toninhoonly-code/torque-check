@@ -11,9 +11,16 @@ async function exigirAdmin(supabase: any, userId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Acesso restrito ao administrador");
+
+  const { data: perfil } = await supabase
+    .from("profiles")
+    .select("ativo")
+    .eq("id", userId)
+    .maybeSingle();
+  if (perfil && perfil.ativo === false) throw new Error("Sua conta está desativada");
 }
 
-/** Lista contas de login com o papel atual (somente admin). */
+/** Lista contas de login com papel, nome e status (somente admin). */
 export const listarUsuarios = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -22,13 +29,86 @@ export const listarUsuarios = createServerFn({ method: "POST" })
     const { data, error } = await supabaseAdmin.auth.admin.listUsers({ perPage: 200 });
     if (error) throw new Error(error.message);
     const { data: papeis } = await supabaseAdmin.from("user_roles").select("user_id, role");
-    return data.users.map((u) => ({
-      id: u.id,
-      email: u.email ?? "",
-      criado_em: u.created_at,
-      papel: (papeis ?? []).find((p) => p.user_id === u.id)?.role ?? null,
-    }));
+    const { data: perfis } = await supabaseAdmin.from("profiles").select("id, nome, ativo");
+    return data.users.map((u) => {
+      const perfil = (perfis ?? []).find((p) => p.id === u.id);
+      return {
+        id: u.id,
+        email: u.email ?? "",
+        nome: perfil?.nome ?? "",
+        ativo: perfil?.ativo ?? true,
+        criado_em: u.created_at,
+        papel: (papeis ?? []).find((p) => p.user_id === u.id)?.role ?? null,
+      };
+    });
   });
+
+/** Cria uma conta de funcionário já confirmada (somente admin). */
+export const criarFuncionario = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        nome: z.string().trim().min(2, "Informe o nome"),
+        email: z.string().trim().email("E-mail inválido"),
+        senha: z.string().min(6, "A senha precisa ter ao menos 6 caracteres"),
+        papel: z.enum(["funcionario", "admin"]).default("funcionario"),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await exigirAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: criado, error } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.senha,
+      email_confirm: true,
+      user_metadata: { nome: data.nome },
+    });
+    if (error || !criado.user) throw new Error(error?.message ?? "Não foi possível criar a conta");
+
+    const uid = criado.user.id;
+    await supabaseAdmin
+      .from("profiles")
+      .upsert({ id: uid, nome: data.nome, email: data.email, ativo: true });
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
+    const { error: erroPapel } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: uid, role: data.papel });
+    if (erroPapel) throw new Error(erroPapel.message);
+    return { ok: true, id: uid };
+  });
+
+/** Atualiza nome e/ou status ativo de uma conta (somente admin). */
+export const atualizarFuncionario = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        nome: z.string().trim().min(2).optional(),
+        ativo: z.boolean().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    await exigirAdmin(context.supabase, context.userId);
+    if (data.ativo === false && data.userId === context.userId) {
+      throw new Error("Você não pode desativar a sua própria conta");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const atualizacao: Record<string, unknown> = {};
+    if (data.nome !== undefined) atualizacao['nome'] = data.nome;
+    if (data.ativo !== undefined) atualizacao['ativo'] = data.ativo;
+    if (Object.keys(atualizacao).length === 0) return { ok: true };
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(atualizacao)
+      .eq("id", data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 
 /** Define o papel de uma conta (somente admin). */
 export const definirPapel = createServerFn({ method: "POST" })
@@ -47,7 +127,11 @@ export const definirPapel = createServerFn({ method: "POST" })
       throw new Error("Você não pode remover o seu próprio acesso de administrador");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
+    const { error: erroRemocao } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId);
+    if (erroRemocao) throw new Error(erroRemocao.message);
     const { error } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: data.userId, role: data.papel });
