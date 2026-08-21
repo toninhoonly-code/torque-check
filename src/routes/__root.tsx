@@ -77,7 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1, viewport-fit=cover",
+      },
       { title: "Mecânica Alto Torque — Check-in de Veículos" },
       {
         name: "description",
@@ -85,6 +88,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Check-in e check-out de veículos com fotos, avarias, checklist e PDF — Mecânica Alto Torque, Sorriso - MT.",
       },
       { name: "author", content: "Mecânica Alto Torque" },
+      { name: "theme-color", content: "#0f0f0f" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Alto Torque" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "format-detection", content: "telephone=no" },
       { property: "og:title", content: "Mecânica Alto Torque — Check-in de Veículos" },
       {
         property: "og:description",
@@ -101,7 +110,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
