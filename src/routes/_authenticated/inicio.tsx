@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardList, History, PlusCircle, Search } from "lucide-react";
+import { ClipboardList, History, PlusCircle, Search, Shield } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
+import { usePapel } from "@/hooks/usePapel";
 import { OFICINA } from "@/lib/oficina";
 
 export const Route = createFileRoute("/_authenticated/inicio")({
@@ -15,18 +16,40 @@ export const Route = createFileRoute("/_authenticated/inicio")({
   component: Inicio,
 });
 
-const botoes = [
+type Botao = {
+  to: string;
+  label: string;
+  icon: typeof PlusCircle;
+  destaque?: boolean;
+};
+
+const EQUIPE: Botao[] = [
   { to: "/nova", label: "Nova entrada", icon: PlusCircle, destaque: true },
   { to: "/historico", label: "Veículos / Histórico", icon: History },
   { to: "/andamento", label: "Atendimentos em andamento", icon: ClipboardList },
   { to: "/buscar", label: "Buscar pela placa", icon: Search },
-] as const;
+];
+
+const CLIENTE: Botao[] = [
+  { to: "/historico", label: "Meus veículos e histórico", icon: History, destaque: true },
+];
 
 function Inicio() {
+  const { isEquipe, isAdmin, carregando } = usePapel();
+
+  const botoes: Botao[] = carregando
+    ? []
+    : isEquipe
+      ? [...EQUIPE, ...(isAdmin ? [{ to: "/admin", label: "Administração", icon: Shield }] : [])]
+      : CLIENTE;
+
   return (
     <>
       <AppHeader />
       <main className="mx-auto max-w-3xl space-y-4 px-4 py-6">
+        {carregando && (
+          <p className="py-10 text-center text-sm text-muted-foreground">Carregando...</p>
+        )}
         {botoes.map((b) => (
           <Link
             key={b.to}
@@ -48,3 +71,4 @@ function Inicio() {
     </>
   );
 }
+
