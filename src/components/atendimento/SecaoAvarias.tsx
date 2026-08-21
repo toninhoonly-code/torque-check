@@ -160,15 +160,26 @@ export function SecaoAvarias({ atendimentoId }: { atendimentoId: string }) {
                 className="h-40 w-full rounded-lg object-cover"
               />
             ) : (
-              <button
-                onClick={() => {
-                  setAlvo(a.id);
-                  fotoRef.current?.click();
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-xs font-bold uppercase"
-              >
-                <Camera className="size-4" /> Foto da avaria
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setAlvo(a.id);
+                    fotoRef.current?.click();
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-xs font-bold uppercase"
+                >
+                  <Camera className="size-4" /> Tirar foto
+                </button>
+                <button
+                  onClick={() => {
+                    setAlvo(a.id);
+                    galeriaRef.current?.click();
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-xs font-bold uppercase"
+                >
+                  <Images className="size-4" /> Galeria
+                </button>
+              </div>
             )}
           </li>
         ))}
@@ -178,6 +189,7 @@ export function SecaoAvarias({ atendimentoId }: { atendimentoId: string }) {
         ref={fotoRef}
         type="file"
         accept="image/*"
+        capture="environment"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
@@ -185,6 +197,18 @@ export function SecaoAvarias({ atendimentoId }: { atendimentoId: string }) {
           if (file) void anexarFoto(file);
         }}
       />
+      <input
+        ref={galeriaRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) void anexarFoto(file);
+        }}
+      />
+
     </div>
   );
 }
