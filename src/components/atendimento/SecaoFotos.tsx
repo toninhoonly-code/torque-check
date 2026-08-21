@@ -134,20 +134,48 @@ export function SecaoFotos({
               <option key={s} value={s} />
             ))}
           </datalist>
-          <button
-            onClick={() => {
-              if (!novoItem.trim()) {
-                toast.error("Descreva a foto antes");
-                return;
-              }
-              inputExtra.current?.click();
-            }}
-            className="w-full rounded-lg bg-primary py-4 text-sm font-extrabold uppercase text-primary-foreground"
-          >
-            Tirar foto
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => {
+                if (!novoItem.trim()) {
+                  toast.error("Descreva a foto antes");
+                  return;
+                }
+                inputExtra.current?.click();
+              }}
+              className="rounded-lg bg-primary py-4 text-sm font-extrabold uppercase text-primary-foreground"
+            >
+              Tirar foto
+            </button>
+            <button
+              onClick={() => {
+                if (!novoItem.trim()) {
+                  toast.error("Descreva a foto antes");
+                  return;
+                }
+                inputGaleria.current?.click();
+              }}
+              className="rounded-lg bg-secondary py-4 text-sm font-extrabold uppercase text-foreground"
+            >
+              Galeria
+            </button>
+          </div>
           <input
             ref={inputExtra}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (!file) return;
+              await salvar(novoItem.trim(), file);
+              setNovoItem("");
+            }}
+          />
+          <input
+            ref={inputGaleria}
             type="file"
             accept="image/*"
             className="hidden"
@@ -159,6 +187,7 @@ export function SecaoFotos({
               setNovoItem("");
             }}
           />
+
         </div>
       </section>
     </div>
