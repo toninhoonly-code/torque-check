@@ -127,7 +127,11 @@ export const definirPapel = createServerFn({ method: "POST" })
       throw new Error("Você não pode remover o seu próprio acesso de administrador");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
+    const { error: erroRemocao } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId);
+    if (erroRemocao) throw new Error(erroRemocao.message);
     const { error } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: data.userId, role: data.papel });
