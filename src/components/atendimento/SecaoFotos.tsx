@@ -40,6 +40,8 @@ export function SecaoFotos({
   const { data, isLoading } = useFotos(atendimentoId);
   const [novoItem, setNovoItem] = useState("");
   const inputExtra = useRef<HTMLInputElement | null>(null);
+  const inputGaleria = useRef<HTMLInputElement | null>(null);
+
 
   const fotosEtapa = useMemo(
     () => (data?.fotos ?? []).filter((f) => f.etapa === etapa),
