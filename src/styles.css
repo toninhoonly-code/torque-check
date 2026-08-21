@@ -93,6 +93,8 @@
   html {
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -101,7 +103,27 @@
     background-image:
       radial-gradient(60rem 30rem at 50% -10rem, oklch(0.35 0.12 27 / 0.28), transparent 70%);
     background-attachment: fixed;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
+
+  img,
+  svg,
+  canvas,
+  video {
+    max-width: 100%;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1rem);
+  }
+
 }
 
 @utility surface-card {
