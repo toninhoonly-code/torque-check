@@ -126,8 +126,64 @@ function Admin() {
       <main className="mx-auto max-w-3xl space-y-8 px-4 py-6">
         <section className="space-y-3">
           <h2 className="text-sm font-extrabold uppercase tracking-wide text-primary">
-            Contas de acesso
+            Funcionários e contas de acesso
           </h2>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!novo.nome || !novo.email || novo.senha.length < 6) {
+                toast.error("Preencha nome, e-mail e uma senha de ao menos 6 caracteres");
+                return;
+              }
+              void acao(async () => {
+                await fnCriar({ data: novo });
+                setNovo({ nome: "", email: "", senha: "", papel: "funcionario" });
+              }, "Funcionário criado");
+            }}
+            className="surface-card space-y-3 p-4"
+          >
+            <p className="text-xs font-bold uppercase text-muted-foreground">Novo funcionário</p>
+            <input
+              value={novo.nome}
+              onChange={(e) => setNovo((v) => ({ ...v, nome: e.target.value }))}
+              placeholder="Nome"
+              className="h-13 w-full rounded-xl border border-input bg-secondary px-4 py-3 text-base"
+            />
+            <input
+              value={novo.email}
+              onChange={(e) => setNovo((v) => ({ ...v, email: e.target.value }))}
+              type="email"
+              autoComplete="off"
+              placeholder="E-mail"
+              className="h-13 w-full rounded-xl border border-input bg-secondary px-4 py-3 text-base"
+            />
+            <input
+              value={novo.senha}
+              onChange={(e) => setNovo((v) => ({ ...v, senha: e.target.value }))}
+              type="password"
+              autoComplete="new-password"
+              placeholder="Senha provisória (mín. 6)"
+              className="h-13 w-full rounded-xl border border-input bg-secondary px-4 py-3 text-base"
+            />
+            <select
+              value={novo.papel}
+              onChange={(e) =>
+                setNovo((v) => ({ ...v, papel: e.target.value as "funcionario" | "admin" }))
+              }
+              className="h-12 w-full rounded-lg border border-input bg-secondary px-3 text-sm"
+            >
+              <option value="funcionario">Funcionário</option>
+              <option value="admin">Administrador</option>
+            </select>
+            <button
+              type="submit"
+              className="h-13 w-full rounded-xl bg-primary py-3 text-sm font-extrabold uppercase text-primary-foreground"
+            >
+              Criar funcionário
+            </button>
+          </form>
+
           {usuarios.isLoading && (
             <p className="text-sm text-muted-foreground">Carregando contas...</p>
           )}
@@ -139,7 +195,19 @@ function Admin() {
           <ul className="space-y-3">
             {(usuarios.data ?? []).map((u) => (
               <li key={u.id} className="surface-card space-y-3 p-4">
-                <p className="break-all text-sm font-bold">{u.email || u.id}</p>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold">{u.nome || "Sem nome"}</p>
+                    <p className="break-all text-xs text-muted-foreground">{u.email || u.id}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold uppercase ${
+                      u.ativo ? "bg-secondary text-muted-foreground" : "bg-primary text-primary-foreground"
+                    }`}
+                  >
+                    {u.ativo ? "Ativo" : "Desativado"}
+                  </span>
+                </div>
                 <div className="grid grid-cols-3 gap-2">
                   {(["admin", "funcionario", "cliente"] as const).map((p) => (
                     <button
@@ -160,10 +228,46 @@ function Admin() {
                     </button>
                   ))}
                 </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      const nome = window.prompt("Nome do funcionário", u.nome || "");
+                      if (nome && nome.trim().length >= 2)
+                        void acao(
+                          () => fnAtualizar({ data: { userId: u.id, nome: nome.trim() } }),
+                          "Nome atualizado",
+                        );
+                    }}
+                    className="rounded-lg bg-secondary py-3 text-[11px] font-bold uppercase text-muted-foreground"
+                  >
+                    Editar nome
+                  </button>
+                  <button
+                    onClick={() => {
+                      const desativar = u.ativo;
+                      const msg = desativar
+                        ? `Desativar o acesso de ${u.nome || u.email}?\n\nO login será bloqueado imediatamente, mas TODOS os atendimentos, fotos e o histórico registrados por essa pessoa serão preservados.`
+                        : `Reativar o acesso de ${u.nome || u.email}?`;
+                      if (window.confirm(msg))
+                        void acao(
+                          () => fnAtualizar({ data: { userId: u.id, ativo: !u.ativo } }),
+                          desativar ? "Funcionário desativado" : "Funcionário reativado",
+                        );
+                    }}
+                    className={`rounded-lg py-3 text-[11px] font-bold uppercase ${
+                      u.ativo
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground"
+                    }`}
+                  >
+                    {u.ativo ? "Desativar" : "Reativar"}
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         </section>
+
 
         <section className="space-y-3">
           <h2 className="text-sm font-extrabold uppercase tracking-wide text-primary">
