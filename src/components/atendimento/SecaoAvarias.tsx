@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { Camera, Trash2 } from "lucide-react";
+import { Camera, Images, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CarDiagram } from "@/components/CarDiagram";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ export function SecaoAvarias({ atendimentoId }: { atendimentoId: string }) {
   const [descricao, setDescricao] = useState("");
   const [ponto, setPonto] = useState<{ x: number; y: number } | null>(null);
   const fotoRef = useRef<HTMLInputElement | null>(null);
+  const galeriaRef = useRef<HTMLInputElement | null>(null);
   const [alvo, setAlvo] = useState<string | null>(null);
 
   const { data } = useQuery({
