@@ -8,9 +8,9 @@ export function FotoItem({
   onRemove,
 }: {
   label: string;
-  url?: string;
+  url?: string | undefined;
   onSelect: (file: File) => Promise<void>;
-  onRemove?: () => Promise<void>;
+  onRemove?: (() => Promise<void>) | undefined;
 }) {
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const galeriaRef = useRef<HTMLInputElement | null>(null);
