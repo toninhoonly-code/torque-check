@@ -8,6 +8,8 @@ import { AppHeader } from "@/components/AppHeader";
 import { usePapel } from "@/hooks/usePapel";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  atualizarFuncionario,
+  criarFuncionario,
   definirPapel,
   excluirRegistro,
   listarUsuarios,
@@ -47,11 +49,19 @@ function Admin() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [busca, setBusca] = useState("");
+  const [novo, setNovo] = useState<{
+    nome: string;
+    email: string;
+    senha: string;
+    papel: "funcionario" | "admin";
+  }>({ nome: "", email: "", senha: "", papel: "funcionario" });
 
   const fnUsuarios = useServerFn(listarUsuarios);
   const fnPapel = useServerFn(definirPapel);
   const fnVincular = useServerFn(vincularCliente);
   const fnExcluir = useServerFn(excluirRegistro);
+  const fnCriar = useServerFn(criarFuncionario);
+  const fnAtualizar = useServerFn(atualizarFuncionario);
 
   useEffect(() => {
     if (!carregando && !isAdmin) {
