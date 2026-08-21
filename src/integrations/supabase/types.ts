@@ -285,17 +285,23 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ativo: boolean
           created_at: string
+          email: string | null
           id: string
           nome: string
         }
         Insert: {
+          ativo?: boolean
           created_at?: string
+          email?: string | null
           id: string
           nome?: string
         }
         Update: {
+          ativo?: boolean
           created_at?: string
+          email?: string | null
           id?: string
           nome?: string
         }
